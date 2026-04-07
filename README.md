@@ -2,9 +2,12 @@
 
 > **Identificação:** Lab02_NUSP  
 > **Disciplina:** Laboratório de Engenharia de Dados
+
 > **Aluno:** Pedro Henrique Wege Barbosa   
 > **Base de referência:** [Lab01_PART2_NUSP](https://github.com/pedrohwb/Lab01_PART2_NUSP)  
 > **Dataset:** [Online Retail II](https://archive.ics.uci.edu/dataset/502/online+retail+ii)
+
+> **Link do repositório:** (https://github.com/pedrohwb/Lab02_NUSP)  
 
 ---
 
