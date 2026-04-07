@@ -1,0 +1,92 @@
+services:
+  # ── PostgreSQL database ────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16
+    container_name: lab02_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-lab02_retail}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - lab02_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-lab02_retail}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Python ingestion pipeline (raw → silver) ───────────────────────────────
+  ingestion:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: lab02_ingestion
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-lab02_retail}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - ./data:/app/data
+      - ./docs:/app/docs
+    networks:
+      - lab02_network
+
+  # ── DBT transformation (silver → gold) ────────────────────────────────────
+  dbt:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: lab02_dbt
+    depends_on:
+      ingestion:
+        condition: service_completed_successfully
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-lab02_retail}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    volumes:
+      - ./dbt_retail:/app/dbt_retail
+    networks:
+      - lab02_network
+
+  # ── Streamlit BI dashboard ─────────────────────────────────────────────────
+  dashboard:
+    build:
+      context: .
+      dockerfile: Dockerfile.dashboard
+    container_name: lab02_dashboard
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${POSTGRES_DB:-lab02_retail}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+    ports:
+      - "8501:8501"
+    networks:
+      - lab02_network
+
+# ── Shared network ─────────────────────────────────────────────────────────
+networks:
+  lab02_network:
+    driver: bridge
+
+# ── Named volumes ──────────────────────────────────────────────────────────
+volumes:
+  postgres_data:

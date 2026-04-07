@@ -1,0 +1,123 @@
+version: 2
+
+models:
+  - name: dim_product
+    description: "Dimensão de produtos — combinação única de stock_code e description."
+    columns:
+      - name: product_id
+        description: "Chave surrogate do produto (gerada por ROW_NUMBER)."
+        tests:
+          - not_null
+          - unique
+      - name: stock_code
+        description: "Código do produto."
+        tests:
+          - not_null
+      - name: description
+        description: "Descrição do produto."
+        tests:
+          - not_null
+
+  - name: dim_customer
+    description: "Dimensão de clientes — identificadores únicos de cliente."
+    columns:
+      - name: customer_key
+        description: "Chave surrogate do cliente (gerada por ROW_NUMBER)."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_country
+    description: "Dimensão de países — países distintos presentes nas transações."
+    columns:
+      - name: country_id
+        description: "Chave surrogate do país (gerada por ROW_NUMBER)."
+        tests:
+          - not_null
+          - unique
+      - name: country_name
+        description: "Nome do país."
+        tests:
+          - not_null
+          - unique
+
+  - name: dim_date
+    description: "Dimensão de datas — datas distintas de transação com atributos temporais."
+    columns:
+      - name: date_id
+        description: "Chave surrogate da data (gerada por ROW_NUMBER)."
+        tests:
+          - not_null
+          - unique
+      - name: full_date
+        description: "Data completa."
+        tests:
+          - not_null
+          - unique
+      - name: year
+        description: "Ano da data."
+        tests:
+          - not_null
+      - name: month
+        description: "Mês da data (1–12)."
+        tests:
+          - not_null
+      - name: day
+        description: "Dia do mês."
+        tests:
+          - not_null
+      - name: quarter
+        description: "Trimestre (1–4)."
+        tests:
+          - not_null
+
+  - name: fct_sales
+    description: >
+      Tabela fato de vendas — cada linha representa uma linha de item de uma nota fiscal.
+      Contém chaves estrangeiras para todas as dimensões e métricas de valor.
+    columns:
+      - name: invoice
+        description: "Número da nota fiscal."
+        tests:
+          - not_null
+      - name: product_id
+        description: "FK → dim_product.product_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_product')
+              field: product_id
+      - name: country_id
+        description: "FK → dim_country.country_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_country')
+              field: country_id
+      - name: date_id
+        description: "FK → dim_date.date_id."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('dim_date')
+              field: date_id
+      - name: quantity
+        description: "Quantidade de itens."
+        tests:
+          - not_null
+      - name: price
+        description: "Preço unitário."
+        tests:
+          - not_null
+      - name: gross_revenue
+        description: "Receita bruta = quantity × price."
+        tests:
+          - not_null
+      - name: is_canceled
+        description: "TRUE se a nota foi cancelada."
+        tests:
+          - not_null
+      - name: period
+        description: "Período no formato YYYY-MM."
+        tests:
+          - not_null

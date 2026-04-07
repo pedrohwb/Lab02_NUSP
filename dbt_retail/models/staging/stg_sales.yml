@@ -1,0 +1,48 @@
+version: 2
+
+models:
+  - name: stg_sales
+    description: >
+      Modelo de staging que expõe os dados da camada Silver como uma view.
+      Aplica a macro get_period_label para gerar a coluna 'period' (YYYY-MM).
+    columns:
+      - name: invoice
+        description: "Número da nota fiscal."
+        tests:
+          - not_null
+      - name: stock_code
+        description: "Código do produto."
+        tests:
+          - not_null
+      - name: description
+        description: "Descrição do produto."
+        tests:
+          - not_null
+      - name: quantity
+        description: "Quantidade de itens."
+        tests:
+          - not_null
+      - name: invoice_date
+        description: "Data e hora da transação."
+        tests:
+          - not_null
+      - name: price
+        description: "Preço unitário (positivo)."
+        tests:
+          - not_null
+      - name: country
+        description: "País do cliente."
+        tests:
+          - not_null
+      - name: is_canceled
+        description: "Flag de cancelamento."
+        tests:
+          - not_null
+      - name: gross_revenue
+        description: "Receita bruta = quantity × price."
+        tests:
+          - not_null
+      - name: period
+        description: "Período no formato YYYY-MM, gerado pela macro get_period_label."
+        tests:
+          - not_null

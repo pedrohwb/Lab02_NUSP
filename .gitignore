@@ -1,0 +1,95 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[codz]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py.cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Environments
+.env
+.envrc
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# DBT generated artifacts
+dbt_retail/target/
+dbt_retail/dbt_packages/
+dbt_retail/logs/
+
+# Data gerada localmente
+data/raw/*
+!data/raw/.gitkeep
+
+data/silver/*
+!data/silver/.gitkeep
+
+# Docs gerados localmente
+docs/plots/*
+!docs/plots/.gitkeep
+
+docs/screenshots/*
+!docs/screenshots/.gitkeep
+!docs/screenshots/*.png
+
+# Arquivos de sistema
+.DS_Store
+Thumbs.db
+
+# mkdocs documentation
+/site
+
+# mypy / pyright / ruff
+.mypy_cache/
+.dmypy.json
+dmypy.json
+.ruff_cache/
+.pytype/
+.pyre/
+cython_debug/
+
+# PyCharm / VSCode
+.idea/
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints

@@ -1,0 +1,29 @@
+# ── DBT runner image ────────────────────────────────────────────────────────
+FROM python:3.11-slim
+
+# ── System dependencies ──────────────────────────────────────────────────────
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libpq-dev \
+    gcc \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+# ── Install DBT core and PostgreSQL adapter ─────────────────────────────────
+RUN pip install --no-cache-dir \
+    dbt-core==1.9.1 \
+    dbt-postgres==1.9.1
+
+# ── Working directory ────────────────────────────────────────────────────────
+WORKDIR /app
+
+# ── Copy DBT project ─────────────────────────────────────────────────────────
+COPY dbt_retail/ ./dbt_retail/
+
+# ── Environment defaults ─────────────────────────────────────────────────────
+ENV PYTHONUNBUFFERED=1 \
+    DBT_PROFILES_DIR=/app/dbt_retail
+
+WORKDIR /app/dbt_retail
+
+# ── Default command: run DBT models and tests ────────────────────────────────
+CMD ["bash", "-c", "dbt deps && dbt run && dbt test"]
